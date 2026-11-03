@@ -9,3 +9,4 @@ torch
 jupyter
 ipykernel
 baycomp
+plotly
