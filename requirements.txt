@@ -10,3 +10,4 @@ jupyter
 ipykernel
 baycomp
 plotly
+tokenizers
