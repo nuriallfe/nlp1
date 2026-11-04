@@ -12,13 +12,16 @@ def load(path):
         logistic_model = pickle.load(f)
     return logistic_model
 
-def fit(training_set, encoder: 'Encoder', save_to=None, max_iter=100, n_jobs=-1):
+def fit(training_set, encoder: 'Encoder', save_to=None, max_iter=100, n_jobs=-1, C=1.0, penalty="l2"):
     """
     Constructs, trains and returns a softmax regressor.
-    
+
     training_set: list of text-label pairs (a text is a string, a label is a 0-based integer)
-    encoder: an instance of the Encoder class (such as TokenIndicator)    
+    encoder: an instance of the Encoder class (such as TokenIndicator)
     save_to: (str) if given, save the model to {save_to}.pickle
+    max_iter: maximum number of iterations of the solver
+    C: inverse of the regularization strength (smaller C = stronger regularization)
+    penalty: "l2" or "l1"
     """
     # Convert the training and validation sets to vectors
     training_vectors = encode_all([text for text, label in training_set], encoder)
@@ -28,7 +31,7 @@ def fit(training_set, encoder: 'Encoder', save_to=None, max_iter=100, n_jobs=-1)
     X_train_sparse = csr_matrix(training_vectors)
 
     # Train the logistic model
-    logistic_model = LogisticRegression(solver="saga", max_iter=max_iter, n_jobs=n_jobs) #sparse matrix frinedly solver 
+    logistic_model = LogisticRegression(solver="saga", max_iter=max_iter, n_jobs=n_jobs, C=C, penalty=penalty) #sparse matrix frinedly solver 
     logistic_model.fit(X_train_sparse, training_labels)
 
     if save_to is not None:        
