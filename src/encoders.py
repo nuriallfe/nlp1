@@ -2,6 +2,8 @@ import numpy as np
 from scipy.sparse import csr_matrix, vstack
 from tokenizers import Tokenizer
 
+from collections import Counter
+import numpy as np
 
 
 class Encoder:
@@ -52,7 +54,7 @@ class BagOfWords(Encoder):
         ids = self.tokenizer.encode(x).ids
         return np.bincount(ids, minlength=len(self)).astype(float)
 
-class NGram(Encoder):
+class NgramBagOfWords:
     """Cuenta cuántas veces aparece cada n-grama de tokens BPE en una frase.
 
     n             : tamaño del n-grama (1 = BagOfWords normal, 2 = bigramas, ...)
@@ -67,7 +69,7 @@ class NGram(Encoder):
         self.include_lower = include_lower
         self.min_count = min_count
         self.max_features = max_features
-        self.vocab = None  # dict: n-grama (tupla de tokens) -> índice
+        self.vocab = None  # dict: n-gram (tokens tuple) -> index
 
     def _ngrams(self, text):
         tokens = self.tokenizer.encode(text).tokens
@@ -92,7 +94,7 @@ class NGram(Encoder):
         vec = np.zeros(self.dim, dtype=np.float32)
         for g in self._ngrams(text):
             j = self.vocab.get(g)
-            if j is not None:        # los n-gramas fuera del vocabulario se ignoran
+            if j is not None:        # the n-grams outside of vocab are ignored
                 vec[j] += 1
         return vec
 
