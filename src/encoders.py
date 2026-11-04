@@ -52,7 +52,51 @@ class BagOfWords(Encoder):
         ids = self.tokenizer.encode(x).ids
         return np.bincount(ids, minlength=len(self)).astype(float)
 
+class NGram(Encoder):
+    """Cuenta cuántas veces aparece cada n-grama de tokens BPE en una frase.
 
+    n             : tamaño del n-grama (1 = BagOfWords normal, 2 = bigramas, ...)
+    include_lower : si True usa todos los n-gramas de tamaño 1..n; si False solo tamaño n
+    min_count     : descarta n-gramas que aparecen menos de esto en el corpus de ajuste
+    max_features  : se queda con los max_features n-gramas más frecuentes
+    """
+
+    def __init__(self, tokenizer, n=2, include_lower=False, min_count=5, max_features=8000):
+        self.tokenizer = tokenizer
+        self.n = n
+        self.include_lower = include_lower
+        self.min_count = min_count
+        self.max_features = max_features
+        self.vocab = None  # dict: n-grama (tupla de tokens) -> índice
+
+    def _ngrams(self, text):
+        tokens = self.tokenizer.encode(text).tokens
+        sizes = range(1, self.n + 1) if self.include_lower else [self.n]
+        return [tuple(tokens[i:i + k]) for k in sizes for i in range(len(tokens) - k + 1)]
+
+    def fit(self, texts):
+        counts = Counter()
+        for t in texts:
+            counts.update(self._ngrams(t))
+        kept = [(g, c) for g, c in counts.items() if c >= self.min_count]
+        kept.sort(key=lambda gc: -gc[1])
+        kept = kept[:self.max_features]
+        self.vocab = {g: i for i, (g, _) in enumerate(kept)}
+        return self
+
+    @property
+    def dim(self):
+        return len(self.vocab)
+
+    def encode(self, text):
+        vec = np.zeros(self.dim, dtype=np.float32)
+        for g in self._ngrams(text):
+            j = self.vocab.get(g)
+            if j is not None:        # los n-gramas fuera del vocabulario se ignoran
+                vec[j] += 1
+        return vec
+
+    __call__ = encode
 
 class PairEncoder(Encoder):
     """
