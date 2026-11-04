@@ -57,16 +57,28 @@ class BagOfWords(Encoder):
 class PairEncoder(Encoder):
     """
     Encodes a PAWS example x = (sentence1, sentence2).
-    Each sentence is encoded with a base encoder (TokenIndicator or BagOfWords)
-    and the two vectors are concatenated: [enc(sentence1), enc(sentence2)].
+    Each sentence is encoded with a base encoder (TokenIndicator or BagOfWords) into
+    vectors a and b, which are then combined:
+
+    mode="diff" (default): [|a - b|, a * b]
+        |a - b| is non-zero for tokens that differ between the sentences,
+        a * b is non-zero for tokens that both sentences share.
+        Symmetric: swapping the two sentences gives the same vector.
+    mode="concat": [a, b]  (each sentence separately, no direct comparison)
     """
 
-    def __init__(self, base_encoder: Encoder):
+    def __init__(self, base_encoder: Encoder, mode: str = "diff"):
+        if mode not in ("diff", "concat"):
+            raise ValueError(f"Unknown mode={mode}")
         self.base = base_encoder
+        self.mode = mode
 
     def __len__(self) -> int:
         return 2 * len(self.base)
 
     def __call__(self, x) -> 'np.array':
         sentence1, sentence2 = x
-        return np.concatenate([self.base(sentence1), self.base(sentence2)])
+        a, b = self.base(sentence1), self.base(sentence2)
+        if self.mode == "concat":
+            return np.concatenate([a, b])
+        return np.concatenate([np.abs(a - b), a * b])
