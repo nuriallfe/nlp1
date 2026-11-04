@@ -12,7 +12,7 @@ def load(path):
         logistic_model = pickle.load(f)
     return logistic_model
 
-def fit(training_set, encoder: 'Encoder', save_to=None, max_iter=100, n_jobs=-1, C=1.0, penalty="l2"):
+def fit(training_set, encoder: 'Encoder', save_to=None, max_iter=100, C=1.0, penalty="l2"):
     """
     Constructs, trains and returns a softmax regressor.
 
@@ -31,7 +31,7 @@ def fit(training_set, encoder: 'Encoder', save_to=None, max_iter=100, n_jobs=-1,
     X_train_sparse = csr_matrix(training_vectors)
 
     # Train the logistic model
-    logistic_model = LogisticRegression(solver="saga", max_iter=max_iter, n_jobs=n_jobs, C=C, penalty=penalty) #sparse matrix frinedly solver 
+    logistic_model = LogisticRegression(solver="saga", max_iter=max_iter, C=C, penalty=penalty) #sparse matrix frinedly solver 
     logistic_model.fit(X_train_sparse, training_labels)
 
     if save_to is not None:        

@@ -11,23 +11,66 @@ from . import smlp
 from . import clslib
 
 
-def cross_validation_split(pairs, k, seed=0):
+def sentence_groups(pairs):
+    """
+    Groups the indices of PAWS pairs that are connected through a shared sentence.
+
+    In PAWS the same sentence appears in several pairs (often with different labels). Two pairs are in the
+    same group if they share a sentence, directly or through other pairs (connected components, union-find).
+    Returns a list of groups, each a list of indices into `pairs`.
+    """
+    parent = {}
+
+    def find(s):
+        parent.setdefault(s, s)
+        while parent[s] != s:
+            parent[s] = parent[parent[s]]  # path compression
+            s = parent[s]
+        return s
+
+    for (sentence1, sentence2), label in pairs:
+        parent[find(sentence1)] = find(sentence2)
+
+    groups = {}
+    for i, ((sentence1, sentence2), label) in enumerate(pairs):
+        groups.setdefault(find(sentence1), []).append(i)
+    return list(groups.values())
+
+
+def cross_validation_split(pairs, k, seed=0, group_by_sentence=True):
     """
     Shuffles a list of labelled texts and splits the result into k folds.
-    
+
     pairs: lists of tuples (text, label)
     k: number of folds
     seed: for reproducible shuffling
+    group_by_sentence: if True (default) and the texts are PAWS pairs (sentence1, sentence2), pairs that share
+        a sentence always fall in the same fold, so no sentence of a validation fold is seen in training.
+        (A random split leaks: ~95% of the validation pairs have a sentence that is also in training,
+        and its training label tends to be the opposite one.)
     """
-    
-    # Shuffle the pairs
-    random.seed(seed)
-    pairs = list(pairs)
-    ids = list(range(len(pairs)))
-    random.shuffle(ids)
 
-    # Split without coercing (text, int) tuples into a string array
-    ids_parts = np.array_split(np.array(ids, dtype=object), k)
+    pairs = list(pairs)
+
+    if group_by_sentence:
+        # Assign whole groups to folds: biggest groups first (random order among equal sizes),
+        # each one to the fold that currently has fewer pairs, so the folds are balanced.
+        rng = random.Random(seed)
+        groups = sentence_groups(pairs)
+        rng.shuffle(groups)
+        groups.sort(key=len, reverse=True)
+        parts = [[] for _ in range(k)]
+        for group in groups:
+            min(parts, key=len).extend(group)
+        ids_parts = [np.array(sorted(part), dtype=object) for part in parts]
+    else:
+        # Shuffle the pairs
+        random.seed(seed)
+        ids = list(range(len(pairs)))
+        random.shuffle(ids)
+
+        # Split without coercing (text, int) tuples into a string array
+        ids_parts = np.array_split(np.array(ids, dtype=object), k)
     
     # Create a dictionary to store the training and validation sets for each fold
     cross_validation_sets = {}
