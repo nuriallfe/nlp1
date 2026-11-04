@@ -85,7 +85,10 @@ class NgramBagOfWords:
         kept = kept[:self.max_features]
         self.vocab = {g: i for i, (g, _) in enumerate(kept)}
         return self
-
+    
+    def __len__(self):
+        return self.dim
+    
     @property
     def dim(self):
         return len(self.vocab)
