@@ -20,16 +20,20 @@ class SparseMLP(nn.Module):
     Output: logprobs over `num_classes`.
     """
 
-    def __init__(self, input_dim, hidden_dim, num_classes, dropout=0.2, num_hidden_layers=1):
+    def __init__(self, input_dim, hidden_dim, num_classes, dropout=0.2, num_hidden_layers=1, activation="relu"):
         """
         input_dim: size of the input feature space (e.g. vocabulary size)
         hidden_dim: width of the hidden layers
         num_classes: number of output labels
         dropout: fraction of hidden units zeroed during training (regularisation)
         num_hidden_layers: number of hidden layers (1 = the tutorial's MLP). The first one takes the
-            sparse input, the extra ones are dense (hidden_dim -> hidden_dim, ReLU, dropout).
+            sparse input, the extra ones are dense (hidden_dim -> hidden_dim, activation, dropout).
+        activation: non-linearity of the hidden layers: "relu" (the tutorial's one), "tanh" or "gelu"
         """
         super().__init__()
+        activations = {"relu": nn.ReLU, "tanh": nn.Tanh, "gelu": nn.GELU}
+        if activation not in activations:
+            raise ValueError(f"activation must be one of {list(activations)}, got {activation!r}")
 
         # First-layer weights stay dense; inputs arriving here are sparse.
         self.weight = nn.Parameter(
@@ -39,13 +43,13 @@ class SparseMLP(nn.Module):
             torch.zeros(hidden_dim)
         )
 
-        self.activation = nn.ReLU()
+        self.activation = activations[activation]()
         self.dropout = nn.Dropout(dropout)
 
         # Extra hidden layers (empty when num_hidden_layers=1, so the model is exactly the tutorial's one)
         extra_layers = []
         for _ in range(num_hidden_layers - 1):
-            extra_layers += [nn.Linear(hidden_dim, hidden_dim), nn.ReLU(), nn.Dropout(dropout)]
+            extra_layers += [nn.Linear(hidden_dim, hidden_dim), activations[activation](), nn.Dropout(dropout)]
         self.extra_hidden = nn.Sequential(*extra_layers)
 
         # Everything after the hidden layers is dense.
@@ -197,7 +201,7 @@ def evaluate(model, dataloader, criterion, device="cpu"):
 
 def train_neural_network_model(training_set, validation_set, num_classes, encoder, save_to,   
                                 hidden_dim=128, dropout=0.1, batch_size=64, learning_rate=1e-3, 
-                                weight_decay=1e-4, num_epochs=20, num_hidden_layers=1, device=torch.device("cpu")):
+                                weight_decay=1e-4, num_epochs=20, num_hidden_layers=1, activation="relu", patience=None, device=torch.device("cpu")):
     """Encode texts, train SparseMLP, and checkpoint the best validation model.
 
     Inputs: train/val (text, label) pairs, num_classes, encoder (text -> sparse vector), path prefix to save weights,
@@ -252,11 +256,12 @@ def train_neural_network_model(training_set, validation_set, num_classes, encode
             'num_classes': num_classes, 
             'dropout': dropout,
             'num_hidden_layers': num_hidden_layers,
+            'activation': activation,
         }
         json.dump(args, f, indent=2, ensure_ascii=False)
         
     # Create the model based on the input dimension, chosen hidden dimension, number of classification classes and dropout rate
-    model = SparseMLP(input_dim=len(encoder), hidden_dim=hidden_dim, num_classes=num_classes, dropout=dropout, num_hidden_layers=num_hidden_layers).to(device)
+    model = SparseMLP(input_dim=len(encoder), hidden_dim=hidden_dim, num_classes=num_classes, dropout=dropout, num_hidden_layers=num_hidden_layers, activation=activation).to(device)
     criterion = nn.NLLLoss() # create the loss function
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay) # create the optimizer
 
@@ -291,7 +296,12 @@ def train_neural_network_model(training_set, validation_set, num_classes, encode
             torch.save(model.state_dict(), f"{save_to}.pt")
             best_epoch = epoch
             predictions = preds
-    
+
+        # Early stopping: stop if the validation loss has not improved for `patience` epochs
+        if patience is not None and epoch - best_epoch >= patience:
+            print(f"Early stopping at epoch {epoch + 1}: no improvement since epoch {best_epoch + 1}")
+            break
+
     time_training = time.time()
     print(f"Training done! Time taken: {time_training - time_dataloader:.3f} seconds")
 
