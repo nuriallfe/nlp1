@@ -89,12 +89,12 @@ def cross_validation_split(pairs, k, seed=0, group_by_sentence=True):
 
 def cross_validation_experiment(data_splits, outcome_space, encoder: 'Encoder', model_option:str, save_to="tmp", loglin_args=dict(), smlp_args=dict()):
     """
-    Trains and evaluates k models using a k-fold data split for cross validation. 
-    This function returns a dictionary with 
+    Trains and evaluates k models using a k-fold data split for cross validation.
+    This function returns a dictionary with
         - models: the paths to the k models trained (the model objects aren't returned, they are stored in disk)
         - predictions: the predictions by each of the k models
         - accuracies: the accuracy of each trained model on its corresponding validation partition
-    
+
     data_splits: the training/validation folds
     encoder: an instance of Encoder
     model_option: for now this only supports 'logistic'
@@ -104,17 +104,17 @@ def cross_validation_experiment(data_splits, outcome_space, encoder: 'Encoder', 
     """
 
     models, predictions, accuracies = OrderedDict(), OrderedDict(), OrderedDict()
-    
-    
-    
+
+
+
     for fold in tqdm(data_splits.keys()):
         training_set = data_splits[fold]["training"]
         validation_set = data_splits[fold]["validation"]
 
         fold_folder = Path(f"{save_to}/fold-{fold}")
-        fold_folder.mkdir(parents=True, exist_ok=True) 
-        
-        if model_option == 'logistic':                        
+        fold_folder.mkdir(parents=True, exist_ok=True)
+
+        if model_option == 'logistic':
             llmodel = loglin.fit(training_set, encoder, save_to=f'{fold_folder}/model', **loglin_args) 
             models[fold] = f'{fold_folder}/model'
             
