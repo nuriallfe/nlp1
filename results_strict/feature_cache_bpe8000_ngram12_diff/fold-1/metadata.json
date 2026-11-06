@@ -1,0 +1,11 @@
+{
+  "signature": "fdc92e5df8ad35ad34c4e20aa3957966c68c854ee37639d3d91f674a895c9b69",
+  "cache_version": 3,
+  "vocab_size": 8000,
+  "min_frequency": 2,
+  "ngram_n": 2,
+  "ngram_include_lower": true,
+  "ngram_min_count": 5,
+  "ngram_max_features": 8000,
+  "pair_mode": "diff"
+}

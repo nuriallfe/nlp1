@@ -1,0 +1,45 @@
+{
+  "selected_epochs": 2,
+  "history": [
+    {
+      "train_metrics": {
+        "loss": 0.6864346591165348,
+        "accuracy": 0.5591431145141313
+      },
+      "inner_val_metrics": {
+        "loss": 0.6854453160396129,
+        "accuracy": 0.5624524955662529
+      }
+    },
+    {
+      "train_metrics": {
+        "loss": 0.676227338208552,
+        "accuracy": 0.5847595991442405
+      },
+      "inner_val_metrics": {
+        "loss": 0.684858190974073,
+        "accuracy": 0.5801874841651887
+      }
+    },
+    {
+      "train_metrics": {
+        "loss": 0.6618163921102561,
+        "accuracy": 0.6147393311564013
+      },
+      "inner_val_metrics": {
+        "loss": 0.6892665222774194,
+        "accuracy": 0.5713199898657207
+      }
+    },
+    {
+      "train_metrics": {
+        "loss": 0.6465741364473481,
+        "accuracy": 0.6296306722215966
+      },
+      "inner_val_metrics": {
+        "loss": 0.698632267643779,
+        "accuracy": 0.5368634405877882
+      }
+    }
+  ]
+}

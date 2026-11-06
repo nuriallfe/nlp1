@@ -1,0 +1,35 @@
+{
+  "selected_epochs": 1,
+  "history": [
+    {
+      "train_metrics": {
+        "loss": 0.6839124948032992,
+        "accuracy": 0.5685209166150554
+      },
+      "inner_val_metrics": {
+        "loss": 0.6797754923341606,
+        "accuracy": 0.5882501899214991
+      }
+    },
+    {
+      "train_metrics": {
+        "loss": 0.665955890601608,
+        "accuracy": 0.6016553122008896
+      },
+      "inner_val_metrics": {
+        "loss": 0.6801002996575836,
+        "accuracy": 0.5854646746011648
+      }
+    },
+    {
+      "train_metrics": {
+        "loss": 0.6454656014309013,
+        "accuracy": 0.6280333314565621
+      },
+      "inner_val_metrics": {
+        "loss": 0.6857307831164583,
+        "accuracy": 0.5657128386933401
+      }
+    }
+  ]
+}

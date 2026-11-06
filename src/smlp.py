@@ -79,7 +79,7 @@ def scipy_to_torch_sparse(x):
     Output: torch sparse tensor with the same shape and non-zero values.
     """
     x = x.tocoo()
-    indices = torch.tensor([x.row, x.col], dtype=torch.long)
+    indices = torch.from_numpy(np.vstack((x.row, x.col)).astype(np.int64, copy=False))
     values = torch.tensor(x.data, dtype=torch.float32)
 
     return torch.sparse_coo_tensor(indices, values, size=x.shape).coalesce()
@@ -366,3 +366,97 @@ def predict_probs(texts, model, encoder, batch_size=10):
             all_probs.extend(logprobs.exp().detach().cpu().numpy())
             
     return np.array(all_probs)
+
+def train_features(X_train, y_train, X_val, y_val, num_classes, save_to,
+                   train_groups=None, hidden_dim=128, dropout=0.1,
+                   batch_size=64, learning_rate=1e-4, weight_decay=1e-4,
+                   num_epochs=20, num_hidden_layers=1, activation="relu",
+                   patience=2, inner_val_fraction=0.1, seed=0, device="cpu"):
+    """Select MLP epoch using an INNER split, then refit on the full outer train.
+
+    Crucially, X_val/y_val are *never* used for early stopping/epoch selection.
+    They are evaluated only once, after the final refit.
+    """
+    from pathlib import Path
+    from sklearn.model_selection import GroupShuffleSplit, StratifiedShuffleSplit
+
+    X_train = csr_matrix(X_train)
+    X_val = csr_matrix(X_val)
+    y_train = np.asarray(y_train, dtype=np.int64)
+    y_val = np.asarray(y_val, dtype=np.int64)
+    if train_groups is not None:
+        splitter = GroupShuffleSplit(n_splits=1, test_size=inner_val_fraction,
+                                     random_state=seed)
+        tr_idx, iv_idx = next(splitter.split(X_train, y_train, groups=train_groups))
+    else:
+        splitter = StratifiedShuffleSplit(n_splits=1, test_size=inner_val_fraction,
+                                          random_state=seed)
+        tr_idx, iv_idx = next(splitter.split(X_train, y_train))
+    if len(np.unique(y_train[tr_idx])) != num_classes:
+        raise ValueError("Inner training split must contain every class")
+
+    def make_loader(X, y, shuffle=False):
+        return DataLoader(
+            SparseDataset(X, y), batch_size=batch_size, shuffle=shuffle,
+            collate_fn=sparse_collate,
+        )
+
+    inner_train = make_loader(X_train[tr_idx], y_train[tr_idx], shuffle=True)
+    inner_val = make_loader(X_train[iv_idx], y_train[iv_idx])
+    target_device = torch.device(device)
+
+    def make_model():
+        return SparseMLP(
+            input_dim=X_train.shape[1], hidden_dim=hidden_dim,
+            num_classes=num_classes, dropout=dropout,
+            num_hidden_layers=num_hidden_layers, activation=activation,
+        ).to(target_device)
+
+    torch.manual_seed(seed)
+    model = make_model()
+    opt = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    criterion = nn.NLLLoss()
+    best_loss = float("inf")
+    best_epoch = -1
+    history = []
+    for epoch in range(num_epochs):
+        train_metric = train_one_epoch(model, inner_train, opt, criterion, target_device)
+        inner_metric, _ = evaluate(model, inner_val, criterion, target_device)
+        history.append({"train_metrics": train_metric, "inner_val_metrics": inner_metric})
+        if inner_metric["loss"] < best_loss:
+            best_loss = inner_metric["loss"]
+            best_epoch = epoch
+        if patience is not None and epoch - best_epoch >= patience:
+            break
+    if best_epoch < 0:
+        raise RuntimeError("No MLP training epoch completed")
+
+    # Train a new model using all training examples; select only the epoch count.
+    torch.manual_seed(seed)
+    final_model = make_model()
+    final_opt = torch.optim.AdamW(final_model.parameters(), lr=learning_rate,
+                                  weight_decay=weight_decay)
+    full_train_loader = make_loader(X_train, y_train, shuffle=True)
+    for _ in range(best_epoch + 1):
+        train_one_epoch(final_model, full_train_loader, final_opt, criterion, target_device)
+
+    path = Path(save_to)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    config = {
+        "input_dim": X_train.shape[1], "hidden_dim": hidden_dim,
+        "num_classes": num_classes, "dropout": dropout,
+        "num_hidden_layers": num_hidden_layers, "activation": activation,
+    }
+    with open(f"{save_to}.json", "w", encoding="utf8") as f:
+        json.dump(config, f, indent=2)
+    torch.save(final_model.state_dict(), f"{save_to}.pt")
+    with open(f"{save_to}_training.json", "w", encoding="utf8") as f:
+        json.dump({"selected_epochs": best_epoch + 1, "history": history}, f, indent=2)
+
+    # Only now touch the held-out OUTER fold.
+    outer_metrics, preds = evaluate(final_model,
+                                    make_loader(X_val, y_val),
+                                    criterion, target_device)
+    print(f"MLP: selected {best_epoch + 1} epochs on inner validation; "
+          f"held-out outer accuracy={outer_metrics['accuracy']:.4f}")
+    return history, best_epoch, preds

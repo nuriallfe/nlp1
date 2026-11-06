@@ -1,0 +1,15 @@
+{
+  "args": {
+    "C": 0.1,
+    "max_iter": 2000
+  },
+  "model": "logistic",
+  "preprocessing": {
+    "0": "123da066faefd606f596527abae496cd5195b827616f82953322267aed108873",
+    "1": "fdc92e5df8ad35ad34c4e20aa3957966c68c854ee37639d3d91f674a895c9b69",
+    "2": "a28378a72cf45bba9dbd0a715ce66f2ad26197454782d96885243724548ebcf4",
+    "3": "808a7379df7e51a254da2ff51d78b495529a1ec7be8f399eee834bacddee5672",
+    "4": "9e88078e34f96e60142629dc0da30f7effa48f6ee94ccce8fea221cff820bb2c"
+  },
+  "representation": "TokenIndicator"
+}

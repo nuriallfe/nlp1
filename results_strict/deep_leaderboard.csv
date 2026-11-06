@@ -1,0 +1,4 @@
+model,family,representation,params,mean_accuracy,std_accuracy,mean_macro_f1
+mlp_deep_NGram_dropout0.1_hidden_dim128,mlp_deep,NGram,"{""dropout"": 0.1, ""hidden_dim"": 128}",0.5754390055759436,0.010267534163499582,0.4551304480223676
+mlp_deep_BagOfWords_dropout0.1_hidden_dim128,mlp_deep,BagOfWords,"{""dropout"": 0.1, ""hidden_dim"": 128}",0.5706149592580921,0.0005028854491938688,0.4166596620493144
+mlp_deep_TokenIndicator_dropout0.1_hidden_dim128,mlp_deep,TokenIndicator,"{""dropout"": 0.1, ""hidden_dim"": 128}",0.5676357019785934,0.011018451663156842,0.41294119086723935

@@ -1,0 +1,13 @@
+model,family,representation,params,mean_accuracy,std_accuracy,mean_macro_f1
+mlp_NGram_dropout0.3_hidden_dim64,mlp,NGram,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.5848836998640492,0.00530232282562571,0.48731149955797726
+mlp_NGram_dropout0.1_hidden_dim128,mlp,NGram,"{""dropout"": 0.1, ""hidden_dim"": 128}",0.5842147439748822,0.008293720869633914,0.48390917257911514
+mlp_BagOfWords_dropout0.1_hidden_dim128,mlp,BagOfWords,"{""dropout"": 0.1, ""hidden_dim"": 128}",0.5837690760154235,0.0023752357936319144,0.461927073901108
+mlp_NGram_dropout0.1_hidden_dim64,mlp,NGram,"{""dropout"": 0.1, ""hidden_dim"": 64}",0.5825325902192718,0.0040585763102914205,0.4768240073655221
+mlp_BagOfWords_dropout0.3_hidden_dim128,mlp,BagOfWords,"{""dropout"": 0.3, ""hidden_dim"": 128}",0.582086792853258,0.002120611257432271,0.45612179308298123
+mlp_TokenIndicator_dropout0.1_hidden_dim128,mlp,TokenIndicator,"{""dropout"": 0.1, ""hidden_dim"": 128}",0.5804045487184663,0.0008777912367167467,0.4229508649684021
+mlp_NGram_dropout0.3_hidden_dim128,mlp,NGram,"{""dropout"": 0.3, ""hidden_dim"": 128}",0.579958658919199,0.007654574869976057,0.48428466258033404
+mlp_BagOfWords_dropout0.1_hidden_dim64,mlp,BagOfWords,"{""dropout"": 0.1, ""hidden_dim"": 64}",0.5777088314715428,0.0013441634690838345,0.43538486065910476
+mlp_TokenIndicator_dropout0.3_hidden_dim128,mlp,TokenIndicator,"{""dropout"": 0.3, ""hidden_dim"": 128}",0.5763711353708005,0.0005511294161843865,0.40997378353558805
+mlp_BagOfWords_dropout0.3_hidden_dim64,mlp,BagOfWords,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.5751753078818164,0.0014396804674588267,0.42858677730180705
+mlp_TokenIndicator_dropout0.3_hidden_dim64,mlp,TokenIndicator,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.5736755495845043,0.010837125755467834,0.41825421449744377
+mlp_TokenIndicator_dropout0.1_hidden_dim64,mlp,TokenIndicator,"{""dropout"": 0.1, ""hidden_dim"": 64}",0.571283927471693,0.005293930678573234,0.4058194757609429
