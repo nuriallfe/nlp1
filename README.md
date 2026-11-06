@@ -10,9 +10,8 @@ The report is in the blog post. This repository contains the code and the experi
 |---|---|
 | Always answering the most common class | 0.558 |
 | Best MLP in cross-validation (one hidden layer, n-gram features) | 0.585 (5-fold CV) |
-| **Final system: logistic regression on bigram features, on the test set** | **0.583** (95% interval 0.572 to 0.594) |
+| **Final system: logistic regression on bigram features, on the test set** | **0.583** |
 
-All models stay close to the baseline. PAWS pairs share almost all their words and differ in word order, and our features (counts of tokens and of pairs of tokens) hardly see that. The notebooks show this in detail.
 
 ## Repository layout
 
