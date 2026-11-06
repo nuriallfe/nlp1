@@ -1,0 +1,9 @@
+model,family,representation,params,mean_accuracy,std_accuracy,mean_macro_f1,variant
+mlp_NGram_dropout0.3_hidden_dim64,mlp,NGram,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.585268824042374,0.005870138075902055,0.501123163649646,balanced_8k
+mlp_NGram_dropout0.3_hidden_dim64,mlp,NGram,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.5848836998640492,0.00530232282562571,0.48731149955797726,original_8k
+mlp_NGram_dropout0.3_hidden_dim64,mlp,NGram,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.5835459462492825,0.006826691278975368,0.4741197742298097,balanced_20k
+logistic_NGram_C0.001,logistic,NGram,"{""C"": 0.001}",0.5799788175847815,0.003126523147299258,0.46768801169409374,balanced_20k
+logistic_NGram_C0.001,logistic,NGram,"{""C"": 0.001}",0.5780938899195539,0.002421093130672109,0.4640337417685972,balanced_8k
+logistic_NGram_C0.01,logistic,NGram,"{""C"": 0.01}",0.5770399474749064,0.0040606939648258076,0.5157452494757175,balanced_8k
+logistic_NGram_C0.01,logistic,NGram,"{""C"": 0.01}",0.5717701695213547,0.004207703600140237,0.5110201217682215,original_8k
+logistic_NGram_C0.01,logistic,NGram,"{""C"": 0.01}",0.5709999786787294,0.00501383144710042,0.5109897149169591,balanced_20k

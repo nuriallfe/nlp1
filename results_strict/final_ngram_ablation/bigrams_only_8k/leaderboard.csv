@@ -1,0 +1,3 @@
+model,family,representation,params,mean_accuracy,std_accuracy,mean_macro_f1
+logistic_NGram_C0.01,logistic,NGram,"{""C"": 0.01}",0.5881469285313067,0.004354663340652374,0.48958620204322123
+mlp_NGram_dropout0.3_hidden_dim64,mlp,NGram,"{""dropout"": 0.3, ""hidden_dim"": 64}",0.5848836690529646,0.005432234991855672,0.5321946988070186

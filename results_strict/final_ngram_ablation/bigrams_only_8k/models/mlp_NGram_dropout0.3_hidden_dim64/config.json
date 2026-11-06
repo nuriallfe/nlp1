@@ -1,0 +1,24 @@
+{
+  "args": {
+    "activation": "relu",
+    "batch_size": 64,
+    "device": "cpu",
+    "dropout": 0.3,
+    "hidden_dim": 64,
+    "learning_rate": 0.0001,
+    "num_epochs": 20,
+    "num_hidden_layers": 1,
+    "patience": 2,
+    "seed": 0,
+    "weight_decay": 0.0001
+  },
+  "model": "mlp",
+  "preprocessing": {
+    "0": "c1983f6ad619b0b8e52c58ec2d7aa6924b103c408dc99258bf2b067b44d3e31f",
+    "1": "8c7c156ab6a971e23e34843d4d14b8acc1e318e64b861aef655112ead1443c7e",
+    "2": "92323fa04377f0624798ff31a10353e4c7b2cb23ea1b54e048a0ecb7e4349c6d",
+    "3": "c6aaadaef2ad4db56e245a75fb5c5c395d2892e60b3c15ad9e39e1260082a875",
+    "4": "8626ba543ca735f65118c53b9aed2790c5db8a08c4846f155fc8ab2656714307"
+  },
+  "representation": "NGram"
+}
