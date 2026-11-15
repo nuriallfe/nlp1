@@ -11,3 +11,5 @@ ipykernel
 baycomp
 plotly
 tokenizers
+gensim
+unicodedata
