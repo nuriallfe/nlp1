@@ -18,6 +18,7 @@ data/
 checkpoints/
 *pt
 *.pth
+*gz
 
 # ignore pt excepting:
 !part2/results/*.pt
