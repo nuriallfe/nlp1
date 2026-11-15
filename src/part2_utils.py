@@ -12,13 +12,14 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.utils.rnn import pad_sequence 
 import time
 from tqdm.auto import tqdm
-
+from collections import Counter
 from zipfile import ZipFile
 from io import TextIOWrapper
 from pathlib import Path
 import gzip
 import nltk
 import re
+import unicodedata
 import random
 import string
 
@@ -317,7 +318,7 @@ def analyse_embs(trained_emb_model, class1, class2, method: str = "Dimensionalit
         pred = KMeans(n_clusters=2, n_init=10, random_state=42).fit_predict(X)
 
         ari = adjusted_rand_score(y, pred)
-        sil = silhouette_score(X, pred)
+        sil = silhouette_samples(X, pred)
         purity = sum(np.bincount(y[pred == k], minlength=2).max() for k in range(2)) / len(y)
         print(f"Adjusted Rand Index: {ari:.3f}  (1 = perfect, ~0 = random)")
         print(f"Purity:              {purity:.3f}  (chance ≈ {max(np.mean(y), 1 - np.mean(y)):.3f})")
@@ -362,40 +363,73 @@ def topk_ids(v, E, k=10):
     top = top[np.argsort(-sims[top])]
     return top.tolist()
 
-def _id2word(model):
-    # vocab.items() yields (id, word) pairs
-    return {i: w for i, w in model.vocab.items()}
+_CHARS = str.maketrans({"ø": "o", "ł": "l", "đ": "d", "ð": "d", "→": ":", "_": " ",
+                        "–": "-", "—": "-", "“": '"', "”": '"', "‘": "'", "’": "'"})
+_MULTI = {"ß": "ss", "æ": "ae", "œ": "oe", "þ": "th"}
+BUCKETS = {"freq = 1": (1, 1), "freq 2-5": (2, 5), "freq 6-50": (6, 50), "freq > 50": (51, 10**9)}
+PAD, UNK = "<pad>", "<unk>"
+def normalize_text(text):
+    for k, v in _MULTI.items():
+        text = text.replace(k, v)
+    text = text.translate(_CHARS)
+    text = unicodedata.normalize("NFKD", text)
+    return "".join(c for c in text if not unicodedata.combining(c))
+
+class CleanTokenizer(BasicTokenizer):
+    def tokens(self, text):
+        return super().tokens(normalize_text(text))
 
 
-def demo_similarity(words, model):
-    """Print the cosine similarity between every pair of the given words."""
-    vecs = {w: model.embed_word(w) for w in words}
-    for i, w1 in enumerate(words):
-        for w2 in words[i + 1:]:
-            print(f"cos({w1}, {w2}) = {cos_similarity(vecs[w1], vecs[w2]):.3f}")
+def build_embedding_matrix(vocab, pretrained, counts, seed=0):
+    """
+    Build the embedding matrix aligned with `vocab` and compute OOV stats.
 
+    Args:
+        vocab: Vocabulary (uses iteration and .index())
+        pretrained: PretrainedEmbeddings (uses `in`, .embed_word() and .num_dims)
+        counts: Counter with word frequencies in the train set
+        seed: seed for the random vectors of OOV words
 
-def demo_topk(words, k, model):
-    """Print the k nearest neighbours (cosine) of each word, excluding the word itself."""
-    id2w = _id2word(model)
-    E = model.vectors
+    Returns:
+        torch.Tensor [len(vocab), D] and a dict with OOV stats
+        (types, tokens, per frequency bucket, top OOV words)
+    """
+    rng = np.random.default_rng(seed)
+    # small-variance normal init for OOV words (breaks symmetry, similar scale to pretrained vectors)
+    E = rng.normal(0, 0.1, (len(vocab), pretrained.num_dims)).astype(np.float32)
+    E[vocab.index(PAD)] = 0.0
+
+    words = [w for w in vocab if w not in (PAD, UNK)]
+    oov = []
     for w in words:
-        ids = topk_ids(model.embed_word(w), E, k + 1)   # +1 because the word itself comes first
-        neighbours = [id2w[i] for i in ids if id2w[i] != w][:k]
-        print(f"{w}: {' '.join(neighbours)}")
+        if w in pretrained:
+            E[vocab.index(w)] = pretrained.embed_word(w)
+        else:
+            oov.append(w)
+
+    oov_set = set(oov)
+    stats = {
+        "OOV types": len(oov) / len(words),
+        "OOV tokens": sum(counts[w] for w in oov) / sum(counts[w] for w in words),
+    }
+    for b, (lo, hi) in BUCKETS.items():
+        ws = [w for w in words if lo <= counts[w] <= hi]
+        stats[b] = sum(w in oov_set for w in ws) / max(len(ws), 1)
+    stats["top_oov"] = sorted(oov, key=lambda w: -counts[w])[:10]
+    return torch.tensor(E), stats
 
 
-def demo_analogy(a, b, c, k, model):
+def build_vocab(sentences, tokenizer, min_freq = 1):
     """
-    Solve 'a is to b as ? is to c' via a - b + c, and print the k nearest words.
-    Example: ('king', 'man', 'woman') -> king - man + woman ≈ queen
+    Create the vocabulary with the training corpus with nltk tokenizer
     """
-    id2w = _id2word(model)
-    v = model.embed_word(a) - model.embed_word(b) + model.embed_word(c)
-    ids = topk_ids(v, model.vectors, k + 3)             # extra room to drop the input words
-    answers = [id2w[i] for i in ids if id2w[i] not in (a, b, c)][:k]
-    print(f"{a} - {b} + {c} ≈ {' '.join(answers)}")
-
+    counts = Counter(t for s in sentences for t in tokenizer.tokens(s))
+    vocab = Vocabulary([PAD, UNK], default= UNK) # Giving pad = 0 and unk = 1
+    for w, c in counts.items(): 
+        if c >= min_freq:
+            vocab.add(w)
+    vocab.freeze()
+    return vocab, counts
 # END Shelf-implemented
 #---------------------------------------------
 
