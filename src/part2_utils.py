@@ -318,7 +318,7 @@ def analyse_embs(trained_emb_model, class1, class2, method: str = "Dimensionalit
         pred = KMeans(n_clusters=2, n_init=10, random_state=42).fit_predict(X)
 
         ari = adjusted_rand_score(y, pred)
-        sil = silhouette_samples(X, pred)
+        sil = silhouette_samples(X, pred).mean()
         purity = sum(np.bincount(y[pred == k], minlength=2).max() for k in range(2)) / len(y)
         print(f"Adjusted Rand Index: {ari:.3f}  (1 = perfect, ~0 = random)")
         print(f"Purity:              {purity:.3f}  (chance ≈ {max(np.mean(y), 1 - np.mean(y)):.3f})")
