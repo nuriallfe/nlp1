@@ -1,0 +1,4 @@
+study,name,encoder,embedding,hidden_size,layers,bidirectional,freeze_embeddings,random_embeddings,word_dropout,classifier_dropout,rnn_dropout,lr,weight_decay,batch_size,epochs,patience,eval_loss,eval_accuracy,eval_macro_f1,eval_recall_0,eval_recall_1,best_epoch,n_train,trainable_parameters,seconds,seed
+hidden_size,hidden_64,gru,glove300,64,1,True,True,False,0.0,0.1,0.0,0.001,0.0001,64,20,3,0.3720718183931089,0.8565058775841102,0.8536604983483733,0.8921568627450981,0.8114678899082569,4,39963,173698,156.0,42
+hidden_size,hidden_128,gru,glove300,128,1,True,True,False,0.0,0.1,0.0,0.001,0.0001,64,20,3,0.35745377322174926,0.8583299554114309,0.8560645243277725,0.8812636165577342,0.8293577981651377,3,39963,396162,246.0,42
+hidden_size,hidden_256,gru,glove300,256,1,True,True,False,0.0,0.1,0.0,0.001,0.0001,64,20,3,0.3541646446348638,0.8512363194162951,0.848475532199759,0.883442265795207,0.8105504587155963,2,39963,988546,375.7,42

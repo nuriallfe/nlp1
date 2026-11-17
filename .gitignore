@@ -25,3 +25,6 @@ checkpoints/
 
 # Trained data of embedded models
 *.logpart2/embed_pretrain_data/
+
+# Pretrained embedding archives
+/part2/embed_pretrain_data/*.zip

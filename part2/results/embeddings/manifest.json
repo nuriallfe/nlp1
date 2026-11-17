@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "vocab_sha256": "ce63e1e0180206c735ffd16abaaf3e0def4e666e435aea33e24da165532a5e8d",
+  "coverage": [
+    {
+      "embedding": "glove100",
+      "dimension": 100,
+      "OOV_types": 0.13663945102773453,
+      "OOV_tokens": 0.018064244777091502
+    },
+    {
+      "embedding": "glove300",
+      "dimension": 300,
+      "OOV_types": 0.13663945102773453,
+      "OOV_tokens": 0.018064244777091502
+    },
+    {
+      "embedding": "fasttext300",
+      "dimension": 300,
+      "OOV_types": 0.09549830034628459,
+      "OOV_tokens": 0.023624080659395016
+    }
+  ]
+}
