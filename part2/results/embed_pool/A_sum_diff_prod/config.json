@@ -1,0 +1,27 @@
+{
+  "name": "A_sum_diff_prod",
+  "seed": 0,
+  "model": {
+    "pooling": "sum",
+    "pair_mode": "diff_prod",
+    "freeze": true,
+    "hidden_sizes": [
+      128
+    ],
+    "dropout": 0.1,
+    "activation": "relu"
+  },
+  "opt": {
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "batch_size": 64,
+    "num_epochs": 30,
+    "patience": 3,
+    "train_fraction": 1.0
+  },
+  "trainable_params": 77186,
+  "total_params": 9520886,
+  "minutes": 44.12,
+  "emb": "fasttext",
+  "dim": 300
+}

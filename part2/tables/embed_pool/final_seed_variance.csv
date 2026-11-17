@@ -1,0 +1,2 @@
+,mean acc,std across folds (mean over seeds),std across seeds (mean over folds),range of per-seed means
+C_hidden_256,0.5987541900849738,0.0037804559781851195,0.0025877886849997507,0.0011552082091903504

@@ -1,0 +1,22 @@
+{
+  "name": "P1MLP_glove",
+  "classifier": "Part 1 MLP architecture, dense input",
+  "procedure": "single training, best inner-dev epoch (no refit)",
+  "standardize": true,
+  "mlp_args": {
+    "activation": "relu",
+    "batch_size": 64,
+    "device": "cpu",
+    "dropout": 0.3,
+    "hidden_dim": 64,
+    "learning_rate": 0.0001,
+    "num_epochs": 20,
+    "num_hidden_layers": 1,
+    "patience": 2,
+    "seed": 0,
+    "weight_decay": 0.0001
+  },
+  "input_dim": 600,
+  "emb": "glove",
+  "pooling": "mean"
+}

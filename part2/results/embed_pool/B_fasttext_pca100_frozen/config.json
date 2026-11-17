@@ -1,0 +1,27 @@
+{
+  "name": "B_fasttext_pca100_frozen",
+  "seed": 0,
+  "model": {
+    "pooling": "sum",
+    "pair_mode": "concat",
+    "freeze": true,
+    "hidden_sizes": [
+      128
+    ],
+    "dropout": 0.1,
+    "activation": "relu"
+  },
+  "opt": {
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "batch_size": 64,
+    "num_epochs": 30,
+    "patience": 3,
+    "train_fraction": 1.0
+  },
+  "trainable_params": 25986,
+  "total_params": 3173886,
+  "minutes": 12.8,
+  "emb": "fasttext",
+  "dim": 100
+}

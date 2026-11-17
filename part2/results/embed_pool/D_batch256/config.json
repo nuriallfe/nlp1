@@ -1,0 +1,27 @@
+{
+  "name": "D_batch256",
+  "seed": 0,
+  "model": {
+    "pooling": "sum",
+    "pair_mode": "concat",
+    "freeze": false,
+    "hidden_sizes": [
+      256
+    ],
+    "dropout": 0.1,
+    "activation": "relu"
+  },
+  "opt": {
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "batch_size": 256,
+    "num_epochs": 30,
+    "patience": 3,
+    "train_fraction": 1.0
+  },
+  "trainable_params": 9598070,
+  "total_params": 9598070,
+  "minutes": 27.05,
+  "emb": "random",
+  "dim": 300
+}

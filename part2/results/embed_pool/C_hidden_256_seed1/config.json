@@ -1,0 +1,27 @@
+{
+  "name": "C_hidden_256_seed1",
+  "seed": 1,
+  "model": {
+    "pooling": "sum",
+    "pair_mode": "concat",
+    "freeze": false,
+    "hidden_sizes": [
+      256
+    ],
+    "dropout": 0.1,
+    "activation": "relu"
+  },
+  "opt": {
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "batch_size": 64,
+    "num_epochs": 30,
+    "patience": 3,
+    "train_fraction": 1.0
+  },
+  "trainable_params": 9598070,
+  "total_params": 9598070,
+  "minutes": 18.14,
+  "emb": "random",
+  "dim": 300
+}

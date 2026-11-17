@@ -1,0 +1,4 @@
+,input,acc mean,acc std,macro-F1
+"P1 final (logistic, bigrams)","8,000 bigram counts (Part 1)",0.5881469285313067,0.004354663340652374,
+P1LOG_fasttext,mean fastText,0.5602577515656242,0.004857153158468612,0.5049837884428117
+P1LOG_random,mean random (fastText scale),0.5566297751172886,0.005634183899933113,0.4924600889422236

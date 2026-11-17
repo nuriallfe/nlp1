@@ -1,0 +1,25 @@
+{
+  "name": "C_hidden_none",
+  "seed": 0,
+  "model": {
+    "pooling": "sum",
+    "pair_mode": "concat",
+    "freeze": false,
+    "hidden_sizes": [],
+    "dropout": 0.1,
+    "activation": "relu"
+  },
+  "opt": {
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "batch_size": 64,
+    "num_epochs": 30,
+    "patience": 3,
+    "train_fraction": 1.0
+  },
+  "trainable_params": 9444902,
+  "total_params": 9444902,
+  "minutes": 38.64,
+  "emb": "random",
+  "dim": 300
+}
