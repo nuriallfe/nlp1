@@ -1,0 +1,4 @@
+,accuracy,macro-F1,paraphrase recall,predicted paraphrase rate
+Majority class,0.558,0.3581514762516046,0.0,0.0
+"Part 1 final (logistic, bigrams)",0.58275,0.48984235318696845,0.17647058823529413,0.13125
+Embed-and-pool final,0.56575,0.38535635398484674,0.027149321266968326,0.01625
