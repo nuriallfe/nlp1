@@ -1,0 +1,3 @@
+study,name,encoder,embedding,hidden_size,layers,bidirectional,freeze_embeddings,random_embeddings,word_dropout,classifier_dropout,rnn_dropout,lr,weight_decay,batch_size,epochs,patience,eval_loss,eval_accuracy,eval_macro_f1,eval_recall_0,eval_recall_1,best_epoch,n_train,trainable_parameters,seconds,seed
+dimensions,GloVe_100d,gru,glove100,128,1,True,True,False,0.0,0.1,0.0,0.001,0.0001,64,20,3,0.3701088630481437,0.8522496959870288,0.8489707705720233,0.8954248366013072,0.7977064220183486,4,39963,242562,214.8,42
+dimensions,GloVe_300d,gru,glove300,128,1,True,True,False,0.0,0.1,0.0,0.001,0.0001,64,20,3,0.35745377322174926,0.8583299554114309,0.8560645243277725,0.8812636165577342,0.8293577981651377,3,39963,396162,186.9,42
